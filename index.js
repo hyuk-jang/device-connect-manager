@@ -9,17 +9,18 @@ module.exports = (function () {
   return {
     /**
      * 장치 객체 Binding. 최초 1회만 수행하면 됨
-     * @param {{connecttype: string, port: number|string, host: string}} config connecttype -> 'socket', 'serial', 'modbus'
+     * @param {{connect_type: string, port: number|string, host: string}} config connect_type -> 'socket', 'serial' 
      * @param {object} parentObj 이벤트를 직접 받고자 할 경우 지정.
+     * @description 2018-01-17 기준 connect_type ==> 'serial', 'socket'
      */
     init: (config, parentObj) => {
       try {
-        if (config === undefined || config.connecttype === undefined || _.contains(deviceConnector, config.connecttype)) {
+        if (config === undefined || config.connect_type === undefined || _.contains(deviceConnector, config.connect_type)) {
           throw new Error('connect Type이 없군요');
         }
         parent = typeof parentObj === 'object' ? parentObj : null;
 
-        const Manager = deviceConnector[config.connecttype];
+        const Manager = deviceConnector[config.connect_type];
         manager = new Manager(config);
 
         // 데이터 바인딩
