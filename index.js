@@ -3,10 +3,10 @@ const deviceConnector = require('./device-connector');
 const eventToPromise = require('event-to-promise');
 
 /** Socket, Serial, Modbus(RTU, ASCII, TCP) 등의 접속 방식을 하나의 module로 관리 */
-module.exports = (function () {
-  let manager;
-  let parent;
+module.exports = function() {
   return {
+    manager: null,
+    parent: null,
     /**
      * 장치 객체 Binding. 최초 1회만 수행하면 됨
      * @param {{connect_type: string, port: number|string, host: string}} config connect_type -> 'socket', 'serial' 
@@ -18,32 +18,33 @@ module.exports = (function () {
         if (config === undefined || config.connect_type === undefined || _.contains(deviceConnector, config.connect_type)) {
           throw new Error('connect Type이 없군요');
         }
-        parent = typeof parentObj === 'object' ? parentObj : null;
+        this.parent = typeof parentObj === 'object' ? parentObj : null;
 
+        BU.CLI(config)
         const Manager = deviceConnector[config.connect_type];
-        manager = new Manager(config);
+        this.manager = new Manager(config);
 
         // 데이터 바인딩
-        manager.on('dcData', data => {
-          if (parent !== null) {
-            parent.emit('dcData', data);
+        this.manager.on('dcData', data => {
+          if (this.parent !== null) {
+            this.parent.emit('dcData', data);
           }
         });
         // 접속 끊김 바인딩
-        manager.on('dcDisconnected', () => {
-          if (parent !== null) {
-            parent.emit('dcDisconnected');
+        this.manager.on('dcDisconnected', () => {
+          if (this.parent !== null) {
+            this.parent.emit('dcDisconnected');
           }
         });
 
         // 에러 발생 바인딩
-        manager.on('dcError', err => {
-          if (parent !== null) {
-            parent.emit('dcError', err);
+        this.manager.on('dcError', err => {
+          if (this.parent !== null) {
+            this.parent.emit('dcError', err);
           }
         });
 
-        return manager;
+        return this.manager;
       } catch (error) {
         throw error;
       }
@@ -52,13 +53,13 @@ module.exports = (function () {
      * Binding 된 Connector 객체에 connect Method 요청
      */
     connect: async() => {
-      if (_.isEmpty(manager)) {
+      if (_.isEmpty(this.manager)) {
         throw new Error('정상적인 init를 먼저 수행하십시오.');
       }
-      manager.connect();
+      this.manager.connect();
 
       // Manager에 이벤트가 발생하기까지 기다림
-      await eventToPromise.multi(manager, ['dcConnect'], ['dcClose', 'dcError']);
+      await eventToPromise.multi(this.manager, ['dcConnect'], ['dcClose', 'dcError']);
 
       return true;
     },
@@ -67,11 +68,12 @@ module.exports = (function () {
      * @param {string|Buffer|{}} msg socket, serial 접속 경우에는 일반적인 buffer msg이고, 각 접속 방식에 맞는 config object 일 수 있음
      */
     write: async msg => {
-      if (_.isEmpty(manager)) {
+      if (_.isEmpty(this.manager)) {
         throw new Error('정상적인 init를 먼저 수행하십시오.');
       }
-      await manager.write(msg);
+      // BU.CLI(manager)
+      await this.manager.write(msg);
       return true;
     }
   };
-})();
+}

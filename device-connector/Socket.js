@@ -39,7 +39,6 @@ class ClientForSocket extends bcjh.socket.SocketClient {
    */
   _eventHandler() {
     super.on('data', data => {
-      console.log('receive', data);
       return this.emit('dcData', data);
     });
 
