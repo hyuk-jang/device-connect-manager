@@ -20,7 +20,7 @@ module.exports = function() {
         }
         this.parent = typeof parentObj === 'object' ? parentObj : null;
 
-        BU.CLI(config)
+        // BU.CLI(config)
         const Manager = deviceConnector[config.connect_type];
         this.manager = new Manager(config);
 

@@ -1,10 +1,10 @@
 
 
-const serialport = require('./Serialport');
+const serial = require('./Serial');
 const socket = require('./Socket');
 
 module.exports = {
-  serialport, socket
+  serial, socket
 };
 
 

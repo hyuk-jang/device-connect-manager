@@ -1,6 +1,6 @@
 const bcjh = require('base-class-jh');
 /** Class Serial Port 접속 클라이언트 클래스 */
-class ClientForSerialport extends bcjh.serial.SerialClient {
+class ClientForSerial extends bcjh.serial.SerialClient {
   /**
    * Serial Port 객체를 생성하기 위한 설정 정보
    * @param {{port: string, baud_rate: number, target_name: string}} config {port, baud_rate, raget_name}
@@ -54,4 +54,4 @@ class ClientForSerialport extends bcjh.serial.SerialClient {
   }
 }
 
-module.exports = ClientForSerialport;
+module.exports = ClientForSerial;
