@@ -40,7 +40,6 @@ class ClientForSerial extends bcjh.serial.SerialClient {
    */
   _eventHandler() {
     super.on('data', data => {
-      console.log('receive', data);
       return this.emit('dcData', data);
     });
 
