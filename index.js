@@ -56,7 +56,7 @@ module.exports = function() {
       if (_.isEmpty(this.manager)) {
         throw new Error('정상적인 init를 먼저 수행하십시오.');
       }
-      this.manager.connect();
+      await this.manager.connect();
 
       // Manager에 이벤트가 발생하기까지 기다림
       await eventToPromise.multi(this.manager, ['dcConnect'], ['dcClose', 'dcError']);
